@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="login-container">
+    <h1>TodoApp</h1>
+
+    <ion-card>
+      <ion-card-content>
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+          <ion-item>
+            <ion-input
+              type="email"
+              fill="outline"
+              label="Email"
+              labelPlacement="floating"
+              formControlName="email"
+              placeholder="Enter your email">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input
+              type="password"
+              fill="outline"
+              label="Password"
+              labelPlacement="floating"
+              formControlName="password"
+              placeholder="Enter your password">
+            </ion-input>
+          </ion-item>
+
+          <ion-button
+            expand="block"
+            type="submit"
+            [disabled]="!loginForm.valid"
+            class="ion-margin-top">
+            Inicar Sesion
+          </ion-button>
+        </form>
+
+        <div class="register-link ion-text-center ion-margin-top">
+          <ion-text>
+            <ion-button fill="clear" (click)="goToRegister()">
+              Crear Cuenta
+            </ion-button>
+          </ion-text>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

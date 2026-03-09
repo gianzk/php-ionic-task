@@ -1,0 +1,57 @@
+<ion-split-pane contentId="main-content">
+  <ion-menu contentId="main-content" type="overlay">
+    <ion-header>
+      <ion-toolbar>
+        @if (currentUser) {
+          <ion-list-header>{{ currentUser.name }}</ion-list-header>
+          <ion-note>{{ currentUser.email }}</ion-note>
+        }
+        @if (currentUser) {
+          <ion-avatar slot="end">
+            <div style="background: #3880ff; color: white; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+              {{ currentUser.name.charAt(0).toUpperCase() }}
+            </div>
+          </ion-avatar>
+        }
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <ion-list id="menu-list">
+        @for (p of appPages; track p; let i = $index) {
+          <ion-menu-toggle auto-hide="false">
+            <ion-item
+              routerDirection="root"
+              [routerLink]="[p.url]"
+              lines="none"
+              detail="false"
+              routerLinkActive="selected">
+              <ion-icon
+                aria-hidden="true"
+                slot="start"
+                [ios]="p.icon + '-outline'"
+                [md]="p.icon + '-sharp'">
+              </ion-icon>
+              <ion-label>{{ p.title }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+        }
+
+        <!-- Logout button -->
+        <ion-menu-toggle auto-hide="false">
+          <ion-item button (click)="logout()" lines="none" detail="false">
+            <ion-icon
+              aria-hidden="true"
+              slot="start"
+              ios="log-out-outline"
+              md="log-out-sharp">
+            </ion-icon>
+            <ion-label>Logout</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <ion-router-outlet id="main-content"></ion-router-outlet>
+</ion-split-pane>

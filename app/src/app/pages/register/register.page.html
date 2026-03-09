@@ -1,0 +1,69 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Register</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="register-container">
+    <h1>Hello RegisterPage</h1>
+
+    <ion-card>
+      <ion-card-content>
+        <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+          <ion-item>
+            <ion-input
+              type="text"
+              fill="outline"
+              label="Name"
+              labelPlacement="floating"
+              formControlName="name"
+              placeholder="name">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input
+              type="email"
+              fill="outline"
+              label="Email"
+              labelPlacement="floating"
+              formControlName="email"
+              placeholder="prueba@correo.com">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input
+              type="password"
+              fill="outline"
+              label="Password"
+              labelPlacement="floating"
+              formControlName="password"
+              placeholder="**********">
+            </ion-input>
+          </ion-item>
+
+          <ion-button
+            expand="block"
+            type="submit"
+            [disabled]="!registerForm.valid"
+            class="ion-margin-top">
+            Registrar Usuario
+          </ion-button>
+        </form>
+
+        <div class="login-link ion-text-center ion-margin-top">
+          <ion-text>
+            <ion-button fill="clear" (click)="goToLogin()">
+              Login
+            </ion-button>
+          </ion-text>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

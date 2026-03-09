@@ -1,0 +1,256 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Tasks</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (!isConnected || isOfflineMode) {
+    <ion-card color="warning">
+      <ion-card-content>
+        <ion-icon name="wifi" style="margin-right: 8px;"></ion-icon>
+        Sin conexion a internet - Modo offline activado
+      </ion-card-content>
+    </ion-card>
+  }
+
+  <div class="task-container">
+    <div class="title-row">
+      <h1>Lista de tareas</h1>
+      @if (isOfflineMode && offlineTasks.length > 0) {
+        <ion-button
+          color="success"
+          [disabled]="syncing"
+          (click)="syncOfflineTasks()">
+          @if (syncing) {
+            <ion-spinner name="crescent" slot="start"></ion-spinner>
+            {{ syncProgress }}
+          } @else {
+            <ion-icon name="sync-outline" slot="start"></ion-icon>
+            Sincronizar ({{ offlineTasks.length }})
+          }
+        </ion-button>
+      }
+    </div>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ isOfflineMode ? 'Tareas Offline (SQLite)' : 'Mis Tareas' }}</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        @if (loading) {
+          <div class="loading-container">
+            <ion-spinner name="crescent"></ion-spinner>
+            <ion-text>Cargando tareas...</ion-text>
+          </div>
+        } @else if (error && !isOfflineMode) {
+          <div class="error-container">
+            <ion-text color="danger">{{ error }}</ion-text>
+            <ion-button fill="clear" (click)="refreshTasks()">
+              <ion-icon name="refresh" slot="start"></ion-icon>
+              Reintentar
+            </ion-button>
+          </div>
+        } @else if (isOfflineMode) {
+          <!-- Offline tasks grid -->
+          @if (error) {
+            <div class="sync-result">
+              <ion-text color="warning">{{ error }}</ion-text>
+            </div>
+          }
+          @if (offlineTasks.length > 0) {
+            <ion-grid>
+              <ion-row class="header-row">
+                <ion-col size="4">
+                  <strong>Titulo</strong>
+                </ion-col>
+                <ion-col size="4">
+                  <strong>Descripcion</strong>
+                </ion-col>
+                <ion-col size="2" class="ion-text-center center-col">
+                  <strong>Estado</strong>
+                </ion-col>
+                <ion-col size="2" class="ion-text-center center-col">
+                  <strong>Actions</strong>
+                </ion-col>
+              </ion-row>
+              @for (task of offlineTasks; track task.localId) {
+                <ion-row class="task-row offline-row">
+                  <ion-col size="4">
+                    <ion-text [class.completed]="task.completed">
+                      {{ task.title }}
+                    </ion-text>
+                  </ion-col>
+                  <ion-col size="4">
+                    <ion-text [class.completed]="task.completed">
+                      {{ task.description }}
+                    </ion-text>
+                  </ion-col>
+                  <ion-col size="2" class="ion-text-center center-col">
+                    <ion-checkbox
+                      [checked]="task.completed"
+                      (ionChange)="requestToggleOfflineTask(task)">
+                    </ion-checkbox>
+                  </ion-col>
+                  <ion-col size="2" class="ion-text-center action-col">
+                    <ion-button
+                      fill="clear"
+                      color="primary"
+                      (click)="openEditOfflineTaskModal(task)">
+                      <ion-icon name="create-outline"></ion-icon>
+                    </ion-button>
+                    <ion-button
+                      fill="clear"
+                      color="danger"
+                      (click)="requestDeleteOfflineTask(task)">
+                      <ion-icon name="trash-outline"></ion-icon>
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+              }
+            </ion-grid>
+          } @else {
+            <div class="empty-state">
+              <ion-text>Sin conexion. Agrega tareas offline y sincroniza cuando tengas red.</ion-text>
+            </div>
+          }
+        } @else if (tasks.length > 0) {
+          <ion-grid>
+            <ion-row class="header-row">
+              <ion-col size="4">
+                <strong>Titulo</strong>
+              </ion-col>
+              <ion-col size="4">
+                <strong>Descripcion</strong>
+              </ion-col>
+              <ion-col size="2" class="ion-text-center center-col">
+                <strong>Estado</strong>
+              </ion-col>
+              <ion-col size="2" class="ion-text-center center-col">
+                <strong>Actions</strong>
+              </ion-col>
+            </ion-row>
+            @for (task of tasks; track task.id) {
+              <ion-row class="task-row">
+                <ion-col size="4">
+                  <ion-text [class.completed]="task.completed">
+                    {{ task.title }}
+                  </ion-text>
+                </ion-col>
+                <ion-col size="4">
+                  <ion-text [class.completed]="task.completed">
+                    {{ task.description }}
+                  </ion-text>
+                </ion-col>
+                <ion-col size="2" class="ion-text-center center-col">
+                  <ion-checkbox
+                    [checked]="task.completed"
+                    [disabled]="isTaskUpdating(task.id)"
+                    (ionChange)="requestToggleTask(task)">
+                  </ion-checkbox>
+                </ion-col>
+                <ion-col size="2" class="ion-text-center action-col">
+                  <ion-button
+                    fill="clear"
+                    color="primary"
+                    [disabled]="isTaskUpdating(task.id)"
+                    (click)="openEditTaskModal(task)">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button
+                    fill="clear"
+                    color="danger"
+                    [disabled]="isTaskUpdating(task.id)"
+                    (click)="requestDeleteTask(task)">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </ion-button>
+                </ion-col>
+              </ion-row>
+            }
+          </ion-grid>
+        } @else {
+          <div class="empty-state">
+            <ion-text>No hay tareas aún. ¡Agrega tu primera tarea!</ion-text>
+          </div>
+        }
+      </ion-card-content>
+    </ion-card>
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="addTask()">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </div>
+
+</ion-content>
+
+<ion-modal
+  [isOpen]="isCreateModalOpen"
+  cssClass="full-screen-modal"
+  [backdropDismiss]="!creatingTask"
+  [keepContentsMounted]="true">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="closeCreateTaskModal()" [disabled]="creatingTask">Cerrar</ion-button>
+        </ion-buttons>
+        <ion-title>{{ isEditMode ? 'Editar Tarea' : 'Agregar Tarea' }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="submitCreateTask()" [disabled]="createTaskForm.invalid || creatingTask">
+            {{ isEditMode ? 'Actualizar' : 'Siguiente' }}
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <form [formGroup]="createTaskForm" (ngSubmit)="submitCreateTask()" class="create-task-form">
+        <ion-item>
+          <ion-input
+            label="Titulo"
+            labelPlacement="stacked"
+            placeholder="Escribe el titulo"
+            formControlName="title">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-textarea
+            label="Descripcion"
+            labelPlacement="stacked"
+            placeholder="Escribe la descripcion"
+            autoGrow="true"
+            formControlName="description">
+          </ion-textarea>
+        </ion-item>
+
+        @if (createTaskError) {
+          <ion-text color="danger">{{ createTaskError }}</ion-text>
+        }
+
+        @if (isOfflineMode) {
+          <ion-text color="medium">
+            <p style="text-align: center; font-size: 0.85em;">
+              <ion-icon name="wifi" style="margin-right: 4px;"></ion-icon>
+              Se guardara localmente (offline)
+            </p>
+          </ion-text>
+        }
+
+        <ion-button expand="block" type="submit" [disabled]="createTaskForm.invalid || creatingTask">
+          @if (creatingTask) {
+            <ion-spinner name="crescent"></ion-spinner>
+          } @else {
+            {{ isEditMode ? 'Actualizar Tarea' : (isOfflineMode ? 'Guardar Offline' : 'Agregar Tarea') }}
+          }
+        </ion-button>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>
