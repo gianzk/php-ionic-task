@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: todoapp_web
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./api:/var/www/html/api
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=todoapp
+      - DB_USER=todouser
+      - DB_PASS=todopass
+    working_dir: /var/www/html
+
+  db:
+    image: mysql:8.0
+    container_name: todoapp_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: todoapp
+      MYSQL_USER: todouser
+      MYSQL_PASSWORD: todopass
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: todoapp_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - PMA_USER=todouser
+      - PMA_PASSWORD=todopass
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:
