@@ -17,6 +17,7 @@ import {
 } from '@ionic/angular/standalone';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
@@ -63,7 +64,16 @@ export class RegisterPage {
           this.router.navigate(['/login']);
         }
       } catch (error) {
-        console.error('Registration error:', error);
+        if (error instanceof HttpErrorResponse) {
+          console.error('Registration HTTP error', {
+            status: error.status,
+            message: error.message,
+            url: error.url,
+            body: error.error
+          });
+        } else {
+          console.error('Registration error:', error);
+        }
       }
     }
   }
