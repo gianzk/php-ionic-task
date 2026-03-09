@@ -15,6 +15,7 @@ import {
 } from '@ionic/angular/standalone';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -56,7 +57,16 @@ export class LoginPage {
           this.router.navigate(['/menu/task']);
         }
       } catch (error) {
-        console.error('Login error:', error);
+        if (error instanceof HttpErrorResponse) {
+          console.error('Login HTTP error', {
+            status: error.status,
+            message: error.message,
+            url: error.url,
+            body: error.error
+          });
+        } else {
+          console.error('Login error:', error);
+        }
       }
     }
   }

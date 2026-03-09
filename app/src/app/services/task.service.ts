@@ -4,12 +4,13 @@ import { Observable } from 'rxjs';
 import { Task, TaskResponse, ApiResponse } from './interfaces/task.interface';
 import { AuthService } from './auth.service';
 import { environment } from 'src/environments/environment';
+import { resolveApiUrl } from '../shared/api-url';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  private apiUrl = environment.api_url;
+  private apiUrl = resolveApiUrl(environment.api_url);
 
   constructor(
     private http: HttpClient,
