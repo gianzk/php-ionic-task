@@ -1,4 +1,7 @@
 # TodoApp  Setup
+ [link-video](https://streamable.com/ld5gfs)
+## Estructura de solucion
+![alt text](image.png)
 ## Services
 - **Web**: PHP 8.3 with Apache (Port 8080)
 - **Database**: MySQL 8.0 (Port 3306)
@@ -33,4 +36,3 @@ docker-compose logs db
 - **Password**: todopass
 - **Root Password**: rootpassword
 
-![alt text](image.png)
