@@ -82,3 +82,5 @@ CREATE TABLE IF NOT EXISTS tasks (
 
 ![al text](image-app.png)
 ![al text](image-task.png)
+
+![apk](https://github.com/gianzk/php-ionic-task/blob/main/app-debug.apk)
