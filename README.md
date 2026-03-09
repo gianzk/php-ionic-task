@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS tasks (
 
 ``
 
-## ejecutar 
+## Ejecutar  App
 
 ```bash
  cd app
@@ -80,4 +80,4 @@ CREATE TABLE IF NOT EXISTS tasks (
  npx cap open android
 ```
 
-![al text](image-app)
+![al text](image-app.png)
